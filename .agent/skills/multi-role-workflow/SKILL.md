@@ -1,15 +1,15 @@
 ---
 name: multi-role-workflow
-description: Orchestrate 3 AI agent roles (Planner, Worker, Integrator) to collaboratively decompose, execute, and assemble project deliverables with file-lock concurrency control.
+description: Orchestrate 4 AI agent roles (Planner, Worker, Integrator, Fixer) to collaboratively decompose, execute, assemble, and maintain project deliverables with file-lock concurrency control.
 ---
 
 # Multi-Role Workflow Skill
 
-This skill enables multiple AI agents to collaborate on a project by assuming one of three roles. It is **project-agnostic** — copy the entire `.agent/skills/multi-role-workflow/` folder into any project to use it.
+This skill enables multiple AI agents to collaborate on a project by assuming one of four roles. It is **project-agnostic** — copy the entire `.agent/skills/multi-role-workflow/` folder into any project to use it.
 
 ## Quick Start
 
-1. The user tells you which **role** to adopt: `Planner`, `Worker`, or `Integrator`.
+1. The user tells you which **role** to adopt: `Planner`, `Worker`, `Integrator`, or `Fixer`.
 2. Read the corresponding role document below.
 3. Follow the instructions exactly.
 
@@ -20,6 +20,7 @@ This skill enables multiple AI agents to collaborate on a project by assuming on
 | "planner", "plan", "decompose", "design tasks" | **Planner** | [roles/planner.md](roles/planner.md) |
 | "worker", "work", "do task", "pick up task" | **Worker** | [roles/worker.md](roles/worker.md) |
 | "integrator", "integrate", "assemble", "merge" | **Integrator** | [roles/integrator.md](roles/integrator.md) |
+| "fixer", "fix", "bug", "debug", "repair" | **Fixer** | [roles/fixer.md](roles/fixer.md) |
 
 > If the role is ambiguous, ask the user to clarify before proceeding.
 
@@ -36,6 +37,7 @@ All runtime data lives in `.workflow/` at the project root. This directory is cr
 .workflow/
 ├── board.json              # Task states — single source of truth
 ├── board.lock              # Ephemeral lock (auto-deleted)
+├── fix-log.md              # Bug fix history (created by Fixer)
 ├── plan/
 │   ├── master-plan.md      # Decomposed plan with dependency graph
 │   └── assembly-guide.md   # Step-by-step assembly instructions
@@ -43,9 +45,13 @@ All runtime data lives in `.workflow/` at the project root. This directory is cr
 │   └── task-NNN/
 │       ├── spec.md         # Task specification
 │       └── deliverables/   # Worker outputs
-├── staging/                # Integrator assembly workspace
-└── output/                 # Final assembled product
+├── staging/
+│   └── <project-name>/    # Integrator assembles here
+└── output/
+    └── <project-name>/    # Final clean deliverable
 ```
+
+The final product is also deployed to `<project-root>/<project-name>/`.
 
 ## Templates
 
@@ -56,8 +62,9 @@ Blank templates are available in `templates/` for reference:
 
 ## Rules
 
-1. **Never modify another role's active work.** Planner creates the plan; Workers execute tasks; Integrator assembles.
+1. **Never modify another role's active work.** Planner creates the plan; Workers execute tasks; Integrator assembles; Fixer patches bugs.
 2. **Always follow the board protocol** when reading or writing `board.json`.
 3. **All file paths are relative** to the project root.
 4. **Deliverable filenames are defined by the Planner** — Workers must use the exact names specified.
-5. **If something is unclear, stop and ask the user** rather than guessing.
+5. **All final output goes inside `<project-name>/`** — never scatter files into the project root.
+6. **If something is unclear, stop and ask the user** rather than guessing.

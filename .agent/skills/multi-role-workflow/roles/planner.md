@@ -34,7 +34,9 @@ You are the **Planner**. You design the project's task decomposition, define del
 
 ### Phase 4: Create Runtime Structure
 
-8. Create the `.workflow/` directory tree:
+8. **Choose a project output folder name** — a short, lowercase, hyphenated name for the final product (e.g., `my-calculator-app`). This name will be used as the root folder for the assembled deliverable.
+
+9. Create the `.workflow/` directory tree:
 
 ```
 .workflow/
@@ -46,48 +48,56 @@ You are the **Planner**. You design the project's task decomposition, define del
 │   │   └── deliverables/
 │   └── ... (one folder per task)
 ├── staging/
+│   └── <project-name>/    # Integrator assembles here
 └── output/
+    └── <project-name>/    # Final clean deliverable
 ```
 
-9. For each task, create `.workflow/tasks/task-NNN/spec.md` using the [task-spec template](../templates/task-spec.md). Fill in:
-   - Objective
-   - Inputs (list exact file paths the Worker needs to read)
-   - Outputs (list exact deliverable filenames the Worker must create)
-   - Verification (one-line check)
-   - Notes (any constraints, edge cases, or tips)
+10. For each task, create `.workflow/tasks/task-NNN/spec.md` using the [task-spec template](../templates/task-spec.md). Fill in:
+    - Objective
+    - Inputs (list exact file paths the Worker needs to read)
+    - Outputs (list exact deliverable filenames the Worker must create)
+    - Verification (one-line check)
+    - Notes (any constraints, edge cases, or tips)
 
 ### Phase 5: Create board.json
 
-10. Create `.workflow/board.json` using the [board template](../templates/board.json).
-11. Populate the `tasks` array with all tasks. Set every task's `status` to `"open"`.
-12. Double-check:
+11. Create `.workflow/board.json` using the [board template](../templates/board.json).
+12. Add a `"project_folder"` field to `board.json` with the project output folder name chosen in step 8.
+13. Populate the `tasks` array with all tasks. Set every task's `status` to `"open"`.
+14. Double-check:
     - Every `depends_on` reference points to a valid task ID.
     - Every `deliverables` path matches the path in the corresponding `spec.md`.
     - `version` is set to `1`.
 
 ### Phase 6: Write the Master Plan
 
-13. Create `.workflow/plan/master-plan.md` containing:
+15. Create `.workflow/plan/master-plan.md` containing:
     - **Project overview** — one paragraph.
+    - **Project output folder** — the name chosen in step 8.
     - **Task list** — table with columns: ID, Title, Parallel Group, Depends On, Deliverables.
     - **Dependency graph** — Mermaid diagram showing the DAG.
     - **Critical path** — which chain of sequential tasks is the longest.
 
 ### Phase 7: Write the Assembly Guide
 
-14. Create `.workflow/plan/assembly-guide.md` using the [assembly-guide template](../templates/assembly-guide.md). Include:
+16. Create `.workflow/plan/assembly-guide.md` using the [assembly-guide template](../templates/assembly-guide.md). Include:
+    - **Project output folder** — the folder name from step 8.
+    - **Final structure** — a tree diagram showing the exact folder/file layout the final product must have inside `<project-name>/`.
     - **Assembly order** — which deliverables to combine first, second, etc.
-    - **Merge instructions** — for each assembly step, explain exactly how to combine the files (e.g., "import X into Y", "copy file to directory Z", "append section to file").
+    - **Merge instructions** — for each assembly step, explain exactly how to combine the files (e.g., "import X into Y", "copy file to directory Z", "append section to file"). All output paths must be inside `.workflow/staging/<project-name>/`.
     - **Verification steps** — concrete commands or checks the Integrator should run after each assembly step (e.g., `run npm run build`, `open index.html in browser`, `check that all routes return 200`).
     - **Tool usage guide** — explain which tools to use for verification (linter, type-checker, browser, test runner) and how.
     - **Final delivery checklist** — what the completed product should look like.
+    - **Cleanup rules** — the Integrator must NOT place any files directly in the project root; everything goes inside `<project-root>/<project-name>/`.
 
 ### Phase 8: Report Completion
 
-15. Report to the user:
+17. Report to the user:
     - Total number of tasks created.
     - Number of parallel groups.
     - The critical path.
+    - The project output folder name.
     - "The plan is ready. Workers can now pick up tasks."
 
 ## Output Checklist
