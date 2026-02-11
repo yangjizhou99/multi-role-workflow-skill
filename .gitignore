@@ -1,0 +1,9 @@
+# Ignore everything by default
+*
+
+# Whitelist .agent and its contents
+!.agent/
+!.agent/**
+
+# Whitelist this file
+!.gitignore
